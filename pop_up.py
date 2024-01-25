@@ -20,6 +20,7 @@ print('Days left to achieve target: ', days_left.days)
 total_hours = days_left_to_achieve_target * 3
 print('Total hours to acheive target: ', total_hours)
 window = tk.Tk()
+window.attributes('-topmost', True)
 window.withdraw() #Hide main window
 
 # Prompting users for their input
