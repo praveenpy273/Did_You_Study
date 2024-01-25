@@ -22,18 +22,18 @@ print('Total hours to acheive target: ', total_hours)
 window = tk.Tk()
 window.withdraw() #Hide main window
 
-# For daily tracker using loop to iterate over days left to achieve target
-for day in range(days_left_to_achieve_target):
-    daily_ques = messagebox.askquestion('Did you study today? ', icon = 'info')
-    print("User's response", daily_ques)
-    if daily_ques == 'yes':
-        hours_ques = simpledialog.askinteger('Good!', 'How many hours did you study? ', parent=window)
-        if hours_ques < 3:
-            total_hours += hours_ques
-        else:
-            total_hours -= hours_ques
+# Prompting users for their input
+
+daily_ques = messagebox.askquestion('Did you study today? ', icon = 'info')
+print("User's response", daily_ques)
+if daily_ques == 'yes':
+    hours_ques = simpledialog.askinteger('Good!', 'How many hours did you study? ', parent=window)
+    if hours_ques < 3:
+        total_hours += hours_ques
     else:
-        total_hours += 3
+        total_hours -= hours_ques
+else:
+    total_hours += 3
         
 print('Revised total hours: ', total_hours)
 still_days_left_to_achieve_target = total_hours / 3
