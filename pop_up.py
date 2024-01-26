@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 import pandas as pd
 import math
+import os
 question = print('What is the target date: ')
 answer = input()
 try:
@@ -61,12 +62,29 @@ else:
     messagebox.showinfo('Info','Good going!')
     possitive_trend =  still_days_left_to_achieve_target > days_left_to_achieve_target
     
-data = {'Date': current_date, 'Hours_studied' : hours_ques, 'Initial_target_days': days_left_to_achieve_target,
-         'Revised_Days_Left' : still_days_left_to_achieve_target}
+data = {'Date': [current_date], 'Hours_studied' : [hours_ques], 'Initial_target_days': [days_left_to_achieve_target],
+         'Revised_Days_Left' : [still_days_left_to_achieve_target]}
 
 
-df = pd.DataFrame([data],index = [0])
+df = pd.DataFrame(data)
 print(df)
+
+
+# Saving datafrafe to csv file
+csv_file = 'study_tracker.csv'
+
+# Check if the file exists if not create the file
+if not os.path.isfile(csv_file):
+    df.to_csv(csv_file, index=False, header=True)
+else:
+    df.to_csv(csv_file, mode='a', index=False, header=False)
+
+
+# read the data from csv
+df_loaded = pd.read_csv(csv_file)
 
 window.deiconify() # Show the window briefly
 window.destroy()
+
+
+
