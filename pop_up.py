@@ -5,6 +5,8 @@ from tkinter import messagebox, simpledialog
 import pandas as pd
 import math
 import os
+import matplotlib as plt
+
 question = print('What is the target date: ')
 answer = input()
 try:
@@ -52,6 +54,7 @@ print('Revised days left: ', still_days_left_to_achieve_target)
 
 if still_days_left_to_achieve_target > days_left_to_achieve_target:
     negative_trend =  days_left_to_achieve_target - still_days_left_to_achieve_target
+    positive_trend = 0
     print('trend is: ', negative_trend)
     
     if negative_trend < -10:
@@ -60,10 +63,13 @@ if still_days_left_to_achieve_target > days_left_to_achieve_target:
         messagebox.showwarning(Warning,'Need to pick up!')
 else:
     messagebox.showinfo('Info','Good going!')
-    possitive_trend =  still_days_left_to_achieve_target > days_left_to_achieve_target
+    positive_trend =  days_left_to_achieve_target - still_days_left_to_achieve_target
+    negative_trend = 0
     
 data = {'Date': [current_date], 'Hours_studied' : [hours_ques], 'Initial_target_days': [days_left_to_achieve_target],
-         'Revised_Days_Left' : [still_days_left_to_achieve_target]}
+         'Revised_Days_Left' : [still_days_left_to_achieve_target], 
+         'Negative_Trend': [negative_trend] if negative_trend else [0],
+         'Positive_Trend': [positive_trend] if positive_trend else [0]}
 
 
 df = pd.DataFrame(data)
