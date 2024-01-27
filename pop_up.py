@@ -5,7 +5,7 @@ from tkinter import messagebox, simpledialog
 import pandas as pd
 import math
 import os
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 question = print('What is the target date: ')
 answer = input()
@@ -77,17 +77,64 @@ print(df)
 
 
 # Saving datafrafe to csv file
-csv_file = 'study_tracker.csv'
+csv_file = 'test_study_tracker.csv'
 
 # Check if the file exists if not create the file
 if not os.path.isfile(csv_file):
+    df = pd.DataFrame(data)
     df.to_csv(csv_file, index=False, header=True)
-else:
-    df.to_csv(csv_file, mode='a', index=False, header=False)
+# else:
+#     df_loaded = pd.read_csv(csv_file)
+#     if current_date in df_loaded['Date'].values:
+#         df_loaded.loc[df_loaded['Date'] == str(current_date), 'Hours_studied'] = hours_ques
 
+#     else:
+#         new_data = {'Date': [current_date], 'Hours_studied' : [hours_ques], 'Initial_target_days': [days_left_to_achieve_target],
+#          'Revised_Days_Left' : [still_days_left_to_achieve_target], 
+#          'Negative_Trend': [negative_trend] if negative_trend else [0],
+#          'Positive_Trend': [positive_trend] if positive_trend else [0]}
+        
+#         new_df = pd.DataFrame(new_data)
+#         df_loaded = pd.concat([df_loaded, new_df], ignore_index=True)
+#         print('df_loaded after concat: ', df_loaded)
+#         df_loaded['Date'] = df_loaded['Date'].astype(str)
+# df_loaded.to_csv(csv_file, index=False, header=True)
+        
 
-# read the data from csv
 df_loaded = pd.read_csv(csv_file)
+
+# Displaying the progress in plot
+plt.figure(figsize=(12,8))
+
+#plotting hours studied
+plt.subplot(3,1,1)
+plt.plot(df_loaded['Date'], df_loaded['Hours_studied'], marker='o', label='Hours Studied')
+          
+plt.title('Daily Hours Studied')
+plt.xlabel('Date')
+plt.ylabel('Hours Studied')
+plt.legend()
+
+#plotting target days movement
+
+plt.subplot(3,1,2)
+plt.plot(df_loaded['Date'], df_loaded['Revised_Days_Left'], marker='o', label='Revised_Days_Left')
+plt.title('Target Days')
+plt.xlabel('Date')
+plt.ylabel('Revised_Days_Left')
+plt.legend()
+#plotting possitive and negative trend
+
+plt.subplot(3,1,3)
+plt.plot(df_loaded['Date'], df_loaded['Negative_Trend'], marker='o', label='Negative_Trend')
+plt.plot(df_loaded['Date'], df_loaded['Positive_Trend'], marker='o', label='Positive_Trend')
+plt.title('Study_tracker trend')
+plt.xlabel('Date')
+plt.ylabel('Values')
+plt.legend()
+
+plt.tight_layout # Adjust layout for better appearance
+plt.show()
 
 window.deiconify() # Show the window briefly
 window.destroy()
