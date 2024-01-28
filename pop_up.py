@@ -73,7 +73,7 @@ data = {'Date': [current_date], 'Hours_studied' : [hours_ques], 'Initial_target_
 
 
 df = pd.DataFrame(data)
-print(df)
+print('This is df: ', df)
 
 
 # Saving datafrafe to csv file
@@ -88,7 +88,8 @@ else:
 
 # read the data from csv
 df_loaded = pd.read_csv(csv_file)
-
+df_loaded.to_csv(csv_file, index=False, header=False)
+print('This is df_loaded: ',df_loaded)
 window.deiconify() # Show the window briefly
 window.destroy()
 
