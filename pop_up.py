@@ -38,12 +38,13 @@ if daily_ques == 'yes':
     hours_ques = simpledialog.askinteger('Good!', 'How many hours did you study? ', parent=window)
 
 
-    if hours_ques < 3:
+    if hours_ques == 0:
+        total_hours += 3
+    elif 0 < hours_ques < 3:
         total_hours += hours_ques
-    elif hours_ques > 3:
-        total_hours -= hours_ques
     else:
-        total_hours
+        total_hours -= hours_ques
+
 else:
     total_hours += 3
     hours_ques = 0
@@ -87,25 +88,30 @@ if not os.path.isfile(csv_file):
     print('file not found!, hence a new file created')
     df.to_csv(csv_file, index=False, mode='a', header=True)
     df_loaded = pd.read_csv(csv_file)
-    df_loaded.to_csv(csv_file, index=False, header=True)
+    # df_loaded.to_csv(csv_file, index=False, header=True)
 else:
     print('file found!')
     df_loaded = pd.read_csv(csv_file)
     print('Before concat: ', df_loaded)
-    if str(yesterday) in df_loaded['Date'].values:
+    if str(yesterday) in df_loaded['Date'].astype(str).values:
         print('file found!, but date already exists')
-        df_loaded= pd.DataFrame(data)
+        df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Hours_studied']] = hours_ques
 
     else:
-        new_df = pd.DataFrame(data)
+        new_data = {'Date': [yesterday], 'Hours_studied' : [hours_ques], 'Initial_target_days': [days_left_to_achieve_target],
+         'Revised_Days_Left' : [still_days_left_to_achieve_target], 
+         'Negative_Trend': [negative_trend] if negative_trend else [0],
+         'Positive_Trend': [positive_trend] if positive_trend else [0]}
+        new_df = pd.DataFrame(new_data)
         df_loaded['Date'] = df_loaded['Date'].astype(str)
         new_df['Date'] = new_df['Date'].astype(str)
         common_columns = df_loaded.columns.intersection(new_df.columns)
 
         df_loaded = pd.concat([df_loaded[common_columns],new_df[common_columns]],ignore_index=True)
         print('After concat: ', df_loaded)
-        
+    
     df_loaded.to_csv(csv_file, index=False, header=True)
+    
             
 
 # Displaying the progress in plot
