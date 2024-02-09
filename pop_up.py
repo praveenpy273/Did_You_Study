@@ -13,13 +13,13 @@ def likely_target_date(trgt,org_days_left,act_days_left):
     return likely_target_acheive_date
 
 
-def find_actual_hours(hrs_std,org_hrs): 
-    if hrs_std == 0:
-        act_hrs = org_hrs + 3
-    elif 0 < hours_ques < 3:
-        act_hrs = org_hrs + (3-hrs_std)
-    elif hours_ques >= 3:
-        act_hrs = org_hrs - hrs_std
+def find_actual_hours(hours_ques,org_hrs,min_study_hours = 3): 
+    if hours_ques == 0:
+        act_hrs = org_hrs + min_study_hours
+    elif 0 < hours_ques < min_study_hours:
+        act_hrs = org_hrs + (min_study_hours-hours_ques)
+    elif hours_ques >= min_study_hours:
+        act_hrs = org_hrs - hours_ques
     
     return act_hrs
 
@@ -73,8 +73,6 @@ print('Revised total hours: ', actual_hours_left) # hours left after adjusting y
 
 actual_days_left = math.ceil(actual_hours_left / 3)
 
-# difference_after_yesterday_hours = actual_days_left - org_days_left
-
 likely_target_acheive_date = likely_target_date(target_date,org_days_left,actual_days_left)
 print(likely_target_acheive_date)
 
@@ -102,14 +100,26 @@ else:
     print('file found!')
     df_loaded = pd.read_csv(csv_file)
     print('Before concat: ', df_loaded)
+    l = len(df_loaded) #length of existing dataframe
+    print('hours_studied:', hours_ques)
+    print('rows in df: ', l)
+
+    
     if str(yesterday) in df_loaded['Date'].astype(str).values: #if the entry for a date is already there and want to adjust the hours
         print('file found!, but date already exists')
-        df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Hours_studied']] = hours_ques
-        df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Actual_Hours_Left']] = find_actual_hours(hours_ques,original_hours_left)
-        df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Revised_Days_Left']] = math.ceil(actual_hours_left/3)
-        df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Likely_Target_Date']] = likely_target_date(target_date,org_days_left,actual_days_left)
+        date_condition = df_loaded['Date'].astype(str) == str(yesterday)
+
+        df_loaded.loc[date_condition, ['Hours_studied']] = hours_ques
+
+        actual_hours = find_actual_hours(hours_ques,df_loaded['Actual_Hours_Left'].iloc[l-2])
+        actual_days = math.ceil(actual_hours/3)
+
+        df_loaded.loc[date_condition, ['Actual_Hours_Left']] = actual_hours
+        df_loaded.loc[date_condition, ['Revised_Days_Left']] = actual_days
+        df_loaded.loc[date_condition, ['Likely_Target_Date']] = likely_target_date(target_date,org_days_left,actual_days)
         df_loaded.loc[df_loaded['Date'].astype(str) == str(yesterday), ['Trend']] = \
-            find_trend(org_days_left,actual_days_left)
+            find_trend(org_days_left,actual_days)
+        
     else:
         l = len(df_loaded) #length of existing dataframe
         print('hours_studied:', hours_ques)
@@ -165,6 +175,8 @@ plt.xlabel('Date')
 plt.ylabel('Hours Studied')
 plt.legend()
 
+plt.tight_layout() # Adjust layout for better appearance
+
 #plotting target days movement
 plt.subplot(3,1,2)
 plt.plot(df_loaded['Date'], df_loaded['Revised_Days_Left'], marker='o', label='Revised_Days_Left')
@@ -172,6 +184,8 @@ plt.title('Target Days')
 plt.xlabel('Date')
 plt.ylabel('Revised_Days_Left')
 plt.legend()
+
+plt.tight_layout # Adjust layout for better appearance
 
 #plotting possitive and negative trend
 plt.subplot(3,1,3)
