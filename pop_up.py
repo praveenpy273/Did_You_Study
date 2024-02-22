@@ -55,7 +55,6 @@ def main():
     
     target_date = get_target_date()
     todays_date = datetime.now().date()
-    # todays_date = parser.parse(todays_date).date()
     yesterday = todays_date-timedelta(days=1)
     print('Yesterday was: ', yesterday)
 
@@ -111,21 +110,14 @@ def main():
     else:
         print('file found!')
         df_loaded = pd.read_csv(csv_file)
-        print('Before concat: ', df_loaded)
         l = len(df_loaded) #length of existing dataframe
-        print('hours_studied:', hours_ques)
-        print('rows in df: ', l)
 
-        
         if str(yesterday) in df_loaded['Date'].astype(str).values: #if the entry for a date is already there and want to adjust the hours
             print('file found!, but date already exists')
             date_condition = df_loaded['Date'].astype(str) == str(yesterday)
-
             df_loaded.loc[date_condition, ['Hours_studied']] = hours_ques
-
             actual_hours = find_actual_hours(hours_ques,df_loaded['Actual_Hours_Left'].iloc[l-2])
             actual_days_left = math.ceil(actual_hours/3)
-
             df_loaded.loc[date_condition, ['Actual_Hours_Left']] = actual_hours
             df_loaded.loc[date_condition, ['Revised_Days_Left']] = actual_days_left
             df_loaded.loc[date_condition, ['Likely_Target_Date']] = likely_target_date(target_date,org_days_left,actual_days_left)
@@ -138,8 +130,6 @@ def main():
             print('rows in df: ', l)
         
             actual_hours_left = find_actual_hours(hours_ques,df_loaded['Actual_Hours_Left'].iloc[l-1])
-            print('else block', actual_hours_left)
-
             actual_days_left = math.ceil(actual_hours_left/3)
             likely_target_acheive_date = likely_target_date(target_date,org_days_left,actual_days_left)
 
@@ -152,7 +142,6 @@ def main():
             'Actual_Hours_Left' : [actual_hours_left],
             'Trend' :find_trend(org_days_left,actual_days_left)}
 
-            
             new_df = pd.DataFrame(new_data)
             df_loaded['Date'] = df_loaded['Date'].astype(str)
             new_df['Date'] = new_df['Date'].astype(str)
@@ -163,7 +152,7 @@ def main():
             print('After concat: ', df_loaded)
         
         df_loaded.to_csv(csv_file, index=False, header=True)
-            
+
         func_trend = find_trend(org_days_left,actual_days_left)
 
         if 0 > func_trend > -10:
@@ -175,19 +164,16 @@ def main():
         else:
             messagebox.showinfo('Info','Good going!')
 
-
         # Displaying the progress in plot
         plt.figure(figsize=(12,8))
 
         #plotting hours studied
         plt.subplot(3,1,1)
-        plt.plot(df_loaded['Date'], df_loaded['Hours_studied'], marker='o', label='Hours Studied')
-                
+        plt.plot(df_loaded['Date'], df_loaded['Hours_studied'], marker='o', label='Hours Studied')         
         plt.title('Daily Hours Studied')
         plt.xlabel('Date')
         plt.ylabel('Hours Studied')
         plt.legend()
-
         plt.tight_layout() # Adjust layout for better appearance
 
         #plotting target days movement
@@ -197,7 +183,6 @@ def main():
         plt.xlabel('Date')
         plt.ylabel('Revised_Days_Left')
         plt.legend()
-
         plt.tight_layout # Adjust layout for better appearance
 
         #plotting possitive and negative trend
@@ -207,8 +192,8 @@ def main():
         plt.xlabel('Date')
         plt.ylabel('Values')
         plt.legend()
-
         plt.tight_layout # Adjust layout for better appearance
+        
         plt.show()
 
         window.deiconify() # Show the window briefly
