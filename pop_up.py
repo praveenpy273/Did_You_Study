@@ -45,8 +45,10 @@ def find_trend(org_days_left,actual_days_left, trend = 0):
         trend = 0
     elif diff > 0:
         trend -= diff
+        print('negative', trend)
     else:
         trend += diff
+        print('positive', trend)
 
     return trend
 
